@@ -2,7 +2,7 @@ name: Docker Image CLI
 
 on:
   push:
-    branches : ["main"]
+    branches: ["main"]
   pull_request:
     branches: ["main"]
 
@@ -11,25 +11,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      -name: Checkout Code
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
 
-  -name: Set up JDK 17
+      - name: Build With Maven
+        run: mvn clean package -DskipTests
 
-uses: actions/setup-java@v3
-  with:
-java-version: '17'
-distribution: 'temurin'
+      - name: Log in to Docker Hub using CLI
+        run: docker login -u Ketan33 -p ${{ secrets.DOCKER_HUB_TOKEN }}
 
-  -name: Build With Maven
-run: mvn clean package -DskipTests
+      - name: Build Docker Image
+        run: docker build -t Ketan33/violetapple-springboot-project:latest .
 
-  -name: Log in to Docker Hub using CLI
-run: docker login -u Ketan33 -p ${{secrets.DOCKER_HUB_TOKEN}}
-
-  -name: Build Docker Image
-run: docker build -t Ketan33/violetapple-springboot-project:latest
-
-  -name: Push Docker Image to Docker Hub
-run: docker push Ketan33/violetapple-springboot-project:latest
+      - name: Push Docker Image to Docker Hub
+        run: docker push Ketan33/violetapple-springboot-project:latest
